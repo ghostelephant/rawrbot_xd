@@ -1,5 +1,5 @@
 const {MongoClient} = require("mongodb");
-const {dbName, dbConnect} = require("../utils").dbConfig;
+const {dbConfig: {dbName, dbConnect}} = require("../utils");
 
 const submitpitch = async ({msg, args, guildInfo}) => {
   if(

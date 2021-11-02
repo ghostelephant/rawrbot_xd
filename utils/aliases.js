@@ -5,7 +5,8 @@ const aliases = {
   callme: "updatenickname",
   pitch: "submitpitch",
   cancel: "cancelpitch",
-  confirm: "confirmpitch"
+  confirm: "confirmpitch",
+  lb: "leaderboard",
 };
 
 module.exports = aliases;

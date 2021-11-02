@@ -1,6 +1,8 @@
 const invalidate = (msg, reason) => {
   msg.react("🚫");
-  msg.reply(reason);
+  if(reason){
+    msg.reply(reason);
+  }
 };
 
 module.exports = invalidate;

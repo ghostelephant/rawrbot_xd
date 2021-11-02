@@ -1,5 +1,15 @@
 const {MongoClient} = require("mongodb");
-const {invalidate, calculateDiff, dbConfig: {dbName, dbConnect}} = require("../utils");
+const {
+  invalidate,
+  calculateDiff,
+  calculateScore,
+  dbConfig: {dbName, dbConnect}
+} = require("../utils");
+
+const right = (num, width) => {
+  let str = num.toString();
+  return " ".repeat(width - str.length) + str;
+};
 
 const confirmpitch = async ({msg, args, guildInfo, client}) => {
   if(
@@ -34,24 +44,33 @@ const confirmpitch = async ({msg, args, guildInfo, client}) => {
     if(playerId === "pitch") continue;
     const guess = currentRound[playerId].guess;
     const diff = calculateDiff(pitch, guess);
+    const score = calculateScore(diff);
     currentRound[playerId].diff = diff;
+    currentRound[playerId].score = score;
     scores.push({
       playerId,
       guess,
-      diff
+      diff,
+      score
     });
   }
   scores.sort((a, b) => a.diff - b.diff);
 
-  let note = "```\n";
+  let note = "**ROUND SUMMARY:**";
+  note += "```" + `PITCH: ${pitch}`
+  note += "\nPlayer       | Guess | Diff | Score\n";
+  note += "-------------|-------|------|------";
   for(let guessObj of scores){
-    const {playerId, guess, diff} = guessObj;
+    const {playerId, guess, diff, score} = guessObj;
     const playerName = guildInfo.utils.playerNicknames[playerId];
-    note += `${playerName} guessed ${guess}, for a diff of ${diff}\n`;
+    note += `\n${playerName} | ${right(guess, 5)} | ${right(diff, 4)} | ${right(score, 5)}`;
+    if(score === -5){
+      note += " 😬";
+    }
   };
   
   const channel = client.channels.cache.get(msg.channelId);
-  channel.send(note + "```");
+  channel.send(note + "\n```");
 
   const currentSession = guildInfo.currentSession || [];
   currentSession.push(currentRound);
